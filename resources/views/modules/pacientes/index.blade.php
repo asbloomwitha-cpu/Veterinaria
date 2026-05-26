@@ -43,7 +43,16 @@
         <tbody>
             @forelse($pacientes as $paciente)
             <tr>
-                <td><strong>{{ $paciente->nombre }}</strong></td>
+                <td style="display: flex; align-items: center; gap: 10px;">
+                    @if($paciente->foto)
+                        <img src="{{ asset('storage/' . $paciente->foto) }}" alt="Foto" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;">
+                    @else
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #64748b;">
+                            {{ substr($paciente->nombre, 0, 1) }}
+                        </div>
+                    @endif
+                    <strong>{{ $paciente->nombre }}</strong>
+                </td>
                 <td>{{ $paciente->especie }} / {{ $paciente->raza ?? 'N/A' }}</td>
                 <td>{{ $paciente->edad ? $paciente->edad . ' años' : 'N/A' }}</td>
                 <td>
@@ -52,7 +61,7 @@
                 </td>
                 <td>
                     <a href="{{ route('pacientes.edit', $paciente->id) }}" class="btn-glass-sm btn-glass-info">Editar</a>
-                    <form action="{{ route('pacientes.destroy', $paciente->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('¿Seguro que deseas eliminar?');">
+                    <form action="{{ route('pacientes.destroy', $paciente->id) }}" method="POST" style="display: inline-block;" class="form-delete">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn-glass-sm btn-glass-danger">Eliminar</button>

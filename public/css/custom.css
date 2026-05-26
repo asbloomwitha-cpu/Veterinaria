@@ -117,6 +117,12 @@ body {
     box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
 }
 
+/* Fix global para cualquier menú desplegable (select) del sistema */
+select option {
+    background-color: var(--bg-color-2) !important;
+    color: white !important;
+}
+
 /* Custom Buttons */
 .btn-glass-primary {
     width: 100%;

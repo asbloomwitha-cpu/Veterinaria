@@ -1,71 +1,95 @@
 @extends('layouts.dashboard')
 
-@section('titulo_pagina', 'Panel Principal')
+@section('titulo_pagina', 'Dashboard')
 
 @section('contenido')
-    @if(auth()->user()->rol === 'administrador')
-        <div class="glass-alert" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border-color: rgba(99, 102, 241, 0.3);">
-            <strong>Modo Administrador:</strong> Tienes acceso a todas las estadísticas globales y configuraciones del sistema.
-        </div>
+<style>
+.stat-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    color: white;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    background: rgba(255, 255, 255, 0.15);
+}
+.stat-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.8;
+}
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.stat-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+</style>
 
-        <!-- Statistics Cards for Admin -->
-        <div class="stats-grid">
-            <div class="glass-stat-card">
-                <div class="stat-title">Total Usuarios</div>
-                <div class="stat-value">{{ \App\Models\User::count() ?? 0 }}</div>
-            </div>
-            <div class="glass-stat-card">
-                <div class="stat-title">Total Pacientes</div>
-                <div class="stat-value">{{ \App\Models\Paciente::count() ?? 0 }}</div>
-            </div>
-            <div class="glass-stat-card">
-                <div class="stat-title">Citas Registradas</div>
-                <div class="stat-value">{{ \App\Models\Cita::count() ?? 0 }}</div>
-            </div>
-        </div>
+<div style="margin-bottom: 3rem;">
+    <h2 style="margin: 0; color: white; font-weight: 800; font-size: 2rem;">Panel de Control</h2>
+    <p style="color: #cbd5e1; margin: 0; font-size: 1.1rem;">Resumen general de la clínica veterinaria.</p>
+</div>
 
-        <!-- Main Section -->
-        <div class="glass-table-container">
-            <h2 style="margin-top: 0; color: white;">Panel de Administración (Vista Global)</h2>
-            <p style="color: #cbd5e1; line-height: 1.6;">
-                Desde aquí puedes gestionar el acceso de los veterinarios y supervisar el volumen general de la clínica.
-                Utiliza el menú lateral para administrar los diferentes módulos del sistema.
-            </p>
-            <div style="margin-top: 1rem;">
-                <a href="{{ route('usuarios.index') }}" class="btn-glass-primary" style="width: auto; padding: 0.5rem 1.5rem; display: inline-block;">Gestión de Usuarios</a>
-            </div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+    <!-- Tarjeta 1: Pacientes -->
+    <a href="{{ route('pacientes.index') }}" style="text-decoration: none;">
+        <div class="stat-card" style="border-top: 4px solid #38bdf8;">
+            <div class="stat-icon">🐶</div>
+            <div class="stat-value">{{ $stats['totalPacientes'] }}</div>
+            <div class="stat-label">Total Pacientes</div>
         </div>
+    </a>
 
-    @else
-        <div class="glass-alert" style="background: rgba(56, 189, 248, 0.2); color: #7dd3fc; border-color: rgba(56, 189, 248, 0.3);">
-            <strong>Modo Veterinario:</strong> Estás viendo tu panel de atención clínica y gestión diaria.
+    <!-- Tarjeta 2: Citas Hoy -->
+    <a href="{{ route('citas.index') }}" style="text-decoration: none;">
+        <div class="stat-card" style="border-top: 4px solid #a855f7;">
+            <div class="stat-icon">📅</div>
+            <div class="stat-value">{{ $stats['citasHoy'] }}</div>
+            <div class="stat-label">Citas para Hoy</div>
         </div>
+    </a>
 
-        <!-- Statistics Cards for Veterinarian -->
-        <div class="stats-grid">
-            <div class="glass-stat-card">
-                <div class="stat-title">Mis Pacientes</div>
-                <div class="stat-value">{{ \App\Models\Paciente::count() ?? 0 }}</div>
-            </div>
-            <div class="glass-stat-card">
-                <div class="stat-title">Citas Hoy</div>
-                <div class="stat-value">{{ \App\Models\Cita::whereDate('fecha_hora', today())->count() ?? 0 }}</div>
-            </div>
-            <div class="glass-stat-card">
-                <div class="stat-title">Historiales Médicos</div>
-                <div class="stat-value">{{ \App\Models\HistorialMedico::count() ?? 0 }}</div>
-            </div>
+    <!-- Tarjeta 3: Bajo Stock -->
+    <a href="{{ route('productos.index') }}" style="text-decoration: none;">
+        <div class="stat-card" style="border-top: 4px solid #f43f5e;">
+            <div class="stat-icon">📦</div>
+            <div class="stat-value">{{ $stats['productosBajoStock'] }}</div>
+            <div class="stat-label">Productos Bajo Stock</div>
         </div>
+    </a>
 
-        <!-- Main Section -->
-        <div class="glass-table-container">
-            <h2 style="margin-top: 0; color: white;">Atención Veterinaria</h2>
-            <p style="color: #cbd5e1; line-height: 1.6;">
-                Revisa tus citas programadas para hoy y administra el historial médico de tus pacientes directamente desde el menú lateral.
-            </p>
-            <div style="margin-top: 1rem;">
-                <a href="{{ route('pacientes.index') }}" class="btn-glass-primary" style="width: auto; padding: 0.5rem 1.5rem; display: inline-block;">Ver Mis Pacientes</a>
-            </div>
+    <!-- Tarjeta 4: Vacunas -->
+    <a href="{{ route('vacunas.index') }}" style="text-decoration: none;">
+        <div class="stat-card" style="border-top: 4px solid #10b981;">
+            <div class="stat-icon">💉</div>
+            <div class="stat-value">{{ $stats['vacunasPendientes'] }}</div>
+            <div class="stat-label">Vacunas Próximas</div>
         </div>
-    @endif
+    </a>
+</div>
+
+<div class="glass-form-container" style="text-align: center; max-width: 800px; margin: 0 auto; padding: 3rem;">
+    <h3 style="color: white; margin-bottom: 1rem;">¡Bienvenido al nuevo sistema!</h3>
+    <p style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.6;">
+        Explora las nuevas herramientas del menú lateral. Ahora puedes gestionar el <strong>Inventario</strong>, registrar <strong>Vacunas</strong> con alertas de próximas dosis, subir <strong>Fotos de Pacientes</strong> y muy pronto un Calendario interactivo.
+    </p>
+</div>
 @endsection

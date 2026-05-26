@@ -19,4 +19,8 @@ Route::middleware("auth")->group(function () {
     Route::resource('pacientes', \App\Http\Controllers\PacienteController::class);
     Route::resource('citas', \App\Http\Controllers\CitaController::class);
     Route::resource('historial', \App\Http\Controllers\HistorialController::class);
+    
+    // Inventario y Vacunas
+    Route::resource('productos', \App\Http\Controllers\ProductoController::class);
+    Route::resource('vacunas', \App\Http\Controllers\VacunaController::class);
 });

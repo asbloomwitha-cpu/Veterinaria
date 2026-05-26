@@ -18,6 +18,7 @@ class Paciente extends Model
         'nombre_propietario',
         'telefono_propietario',
         'observaciones',
+        'foto',
     ];
 
     public function user()
